@@ -8,6 +8,7 @@ const defaults = Object.assign({
 	actionUrl: 'https://github.com/',
 	customCSS: '',
 	personalToken: '',
+	devinToken: '',
 	logging: false,
 	logHTTP: false,
 }, Object.fromEntries(importedFeatures.map(id => [`feature:${id}`, true])));
@@ -43,4 +44,13 @@ export async function getToken(): Promise<string | undefined> {
 
 export async function hasToken(): Promise<boolean> {
 	return Boolean(await getToken());
+}
+
+export async function getDevinToken(): Promise<string | undefined> {
+	const {devinToken} = await cachedSettings;
+	return devinToken;
+}
+
+export async function hasDevinToken(): Promise<boolean> {
+	return Boolean(await getDevinToken());
 }

@@ -7,7 +7,7 @@ import {StorageItem} from 'webext-storage';
 import {handleMessages} from 'webext-msg';
 import {isSafari} from 'webext-detect';
 
-import optionsStorage, {hasToken} from './options-storage.js';
+import optionsStorage, {hasToken, getDevinToken} from './options-storage.js';
 import isDevelopmentVersion from './helpers/is-development-version.js';
 import {doesBrowserActionOpenOptions} from './helpers/feature-utils.js';
 import {styleHotfixes} from './helpers/hotfix.js';
@@ -121,37 +121,44 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 	if (message.type === 'API_REQUEST_DEVIN_ISSUE_TRIAGE') {
 		console.log('Received Devin API triage request:', message);
-	
-		const { repository, issue } = message.payload;
-	
+
+		const {repository, issue} = message.payload;
+
+		// Use environment variable for API token
+		const token = getDevinToken();
+
+		if (!token) {
+			sendResponse({success: false, error: 'DEVIN_API_TOKEN environment variable not configured.'});
+			return;
+		}
+
 		fetch('https://api.devin.ai/sessions', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				// Include Authorization if required by Devin API
-				// 'Authorization': 'Bearer YOUR_API_KEY'
+				'Authorization': `Bearer ${token}`,
 			},
 			body: JSON.stringify({
 				mode: 'triage',
 				github: {
 					repo: repository,   // e.g., "user/repo"
-					issue: issue        // e.g., issue number or URL
-				}
-			})
+					issue: issue,        // e.g., issue number or URL
+				},
+			}),
 		})
 			.then(response => {
-			if (!response.ok) {
-				throw new Error(`Devin API responded with status ${response.status}`);
-			}
-			return response.json();
-		})
-		.then(data => {
-			sendResponse({ success: true, result: data });
-		})
-		.catch(error => {
-			sendResponse({ success: false, error: error.message });
-		});
-	
+				if (!response.ok) {
+					throw new Error(`Devin API responded with status ${response.status}`);
+				}
+				return response.json();
+			})
+			.then(data => {
+				sendResponse({success: true, result: data});
+			})
+			.catch(error => {
+				sendResponse({success: false, error: error.message});
+			});
+
 		return true; // Indicates async response
 	}
 	
