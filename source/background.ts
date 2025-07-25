@@ -124,7 +124,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`,
 			},
-			body: `{"prompt":"Review the issue at ${fullUrl}, and triage it by making a plan to implement it and comment on the issue with the plan. Also, provide a "feasibility" score from 1-10 on how likely it is that the issue can be implemented. DO NOT actually implement the issue.","idempotent":true}`,
+			body: `{"prompt":"Review the issue at ${fullUrl}, and triage it by making a plan to implement it and comment on the issue with the plan. Also, provide a feasibility score from 1-10 on how likely it is that the issue can be implemented. DO NOT actually implement the issue.","idempotent":true}`,
 		})
 			.then(response => {
 				if (!response.ok) {
