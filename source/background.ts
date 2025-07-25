@@ -107,7 +107,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 	await showWelcomePage();
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 	if (message.type === 'API_REQUEST_POKEMON') {
 		console.log('Received message:', message);
 		// Handle the API request
@@ -125,7 +125,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		const {repository, issue} = message.payload;
 
 		// Use environment variable for API token
-		const token = getDevinToken();
+		const token = await getDevinToken();
 
 		if (!token) {
 			sendResponse({success: false, error: 'DEVIN_API_TOKEN environment variable not configured.'});
@@ -155,5 +155,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 		return true; // Indicates async response
 	}
-	
 });
