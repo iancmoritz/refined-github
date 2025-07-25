@@ -35,8 +35,10 @@ async function makeApiRequestDevinTriage(): Promise<void> {
 			},
 		});
 
-		if (response.success) {
+		if (response && response.success) {
 			console.log(`Devin session created:`, response.result);
+			// Open the session in a new tab
+			window.open(response.result.url, '_blank');
 			alert(`Devin triage session created! Session ID: ${response.result.sessionId || 'unknown'}`);
 		} else {
 			throw new Error(response.error || 'Unknown error');
@@ -57,8 +59,9 @@ async function makeApiRequestDevinImplement(): Promise<void> {
 			},
 		});
 
-		if (response.success) {
+		if (response && response.success) {
 			console.log(`Devin session created:`, response.result);
+			window.open(response.result.url, '_blank');
 			alert(`Devin implement session created! Session ID: ${response.result.sessionId || 'unknown'}`);
 		} else {
 			throw new Error(response.error || 'Unknown error');
@@ -88,7 +91,7 @@ async function addSidebarButton(reviewersSection: Element): Promise<void> {
 						border: '1px solid #0969da',
 						gap: '6px',
 					}}
-					onClick={() => makeApiRequestDevinTriage()}
+					onClick={async () => await makeApiRequestDevinTriage()}
 				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M12 2L8 6h8l-4-4zM6 8v8l4-4-4-4zm12 0l-4 4 4 4V8zM8 18h8l-4 4-4-4z" />
@@ -108,7 +111,7 @@ async function addSidebarButton(reviewersSection: Element): Promise<void> {
 						border: '1px solid #0969da',
 						gap: '6px',
 					}}
-					onClick={() => makeApiRequestDevinImplement()}
+					onClick={async () => await makeApiRequestDevinImplement()}
 				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M12 2L8 6h8l-4-4zM6 8v8l4-4-4-4zm12 0l-4 4 4 4V8zM8 18h8l-4 4-4-4z" />
