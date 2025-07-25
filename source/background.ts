@@ -7,7 +7,7 @@ import {StorageItem} from 'webext-storage';
 import {handleMessages} from 'webext-msg';
 import {isSafari} from 'webext-detect';
 
-import optionsStorage, {hasToken, getDevinToken} from './options-storage.js';
+import optionsStorage, {hasToken} from './options-storage.js';
 import isDevelopmentVersion from './helpers/is-development-version.js';
 import {doesBrowserActionOpenOptions} from './helpers/feature-utils.js';
 import {styleHotfixes} from './helpers/hotfix.js';
@@ -107,7 +107,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 	await showWelcomePage();
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 	if (message.type === 'API_REQUEST_DEVIN_ISSUE_TRIAGE') {
 		console.log('Received Devin API triage request:', message);
 
