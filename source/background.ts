@@ -122,7 +122,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 	if (message.type === 'API_REQUEST_DEVIN_ISSUE_TRIAGE') {
 		console.log('Received Devin API triage request:', message);
 
-		const {repository, issue} = message.payload;
+		const {fullUrl} = message.payload;
 
 		// Use environment variable for API token
 		const token = await getDevinToken();
@@ -138,7 +138,44 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`,
 			},
-			body: `{"prompt":"Review the pull request at ${repository}/issue/${issue}","idempotent":true}`,
+			body: `{"prompt":"Review the issue at ${fullUrl}, and triage it by making a plan to implement it and comment on the issue with the plan.","idempotent":true}`,
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`Devin API responded with status ${response.status}`);
+				}
+				return response.json();
+			})
+			.then(data => {
+				sendResponse({success: true, result: data});
+			})
+			.catch(error => {
+				sendResponse({success: false, error: error.message});
+			});
+
+		return true; // Indicates async response
+	}
+
+	if (message.type === 'API_REQUEST_DEVIN_ISSUE_IMPLEMENT') {
+		console.log('Received Devin API triage request:', message);
+
+		const {fullUrl} = message.payload;
+
+		// Use environment variable for API token
+		const token = await getDevinToken();
+
+		if (!token) {
+			sendResponse({success: false, error: 'DEVIN_API_TOKEN environment variable not configured.'});
+			return;
+		}
+
+		fetch('https://api.devin.ai/v1/sessions', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+			body: `{"prompt":"Implement the issue at ${fullUrl} and open a pull request","idempotent":true}`,
 		})
 			.then(response => {
 				if (!response.ok) {

@@ -25,13 +25,13 @@ async function makeApiRequestPokemon(action: string, _issueUrl: string): Promise
 	}
 }
 
-async function makeApiRequestDevinTriage(repository: string, issue: number): Promise<void> {
+async function makeApiRequestDevinTriage(): Promise<void> {
+	const fullUrl = globalThis.location.href;
 	try {
 		const response = await chrome.runtime.sendMessage({
 			type: 'API_REQUEST_DEVIN_ISSUE_TRIAGE',
 			payload: {
-				repository,
-				issue,
+				fullUrl,
 			},
 		});
 
@@ -47,11 +47,30 @@ async function makeApiRequestDevinTriage(repository: string, issue: number): Pro
 	}
 }
 
+async function makeApiRequestDevinImplement(): Promise<void> {
+	const fullUrl = globalThis.location.href;
+	try {
+		const response = await chrome.runtime.sendMessage({
+			type: 'API_REQUEST_DEVIN_ISSUE_IMPLEMENT',
+			payload: {
+				fullUrl,
+			},
+		});
+
+		if (response.success) {
+			console.log(`Devin session created:`, response.result);
+			alert(`Devin implement session created! Session ID: ${response.result.sessionId || 'unknown'}`);
+		} else {
+			throw new Error(response.error || 'Unknown error');
+		}
+	} catch (error) {
+		console.error(`Error creating Devin session:`, error);
+		alert(`Error creating Devin session. Check console.`);
+	}
+}
+
 
 async function addSidebarButton(reviewersSection: Element): Promise<void> {
-	// Get the current issue/PR URL
-	const currentUrl = globalThis.location.href;
-
 	// Create a container with both buttons horizontally inline
 	const buttonsContainer = (
 		<div className="discussion-sidebar-item">
@@ -69,7 +88,7 @@ async function addSidebarButton(reviewersSection: Element): Promise<void> {
 						border: '1px solid #0969da',
 						gap: '6px',
 					}}
-					onClick={() => makeApiRequestDevinTriage('github.com/iancmoritz/refined-github', 1)}
+					onClick={() => makeApiRequestDevinTriage()}
 				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M12 2L8 6h8l-4-4zM6 8v8l4-4-4-4zm12 0l-4 4 4 4V8zM8 18h8l-4 4-4-4z" />
@@ -89,7 +108,7 @@ async function addSidebarButton(reviewersSection: Element): Promise<void> {
 						border: '1px solid #0969da',
 						gap: '6px',
 					}}
-					onClick={() => makeApiRequestPokemon('charizard', currentUrl)}
+					onClick={() => makeApiRequestDevinImplement()}
 				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M12 2L8 6h8l-4-4zM6 8v8l4-4-4-4zm12 0l-4 4 4 4V8zM8 18h8l-4 4-4-4z" />
