@@ -25,7 +25,9 @@
 	],
 	"host_permissions": [
 		"https://github.com/*",
-		"https://api.github.com/*"
+		"https://api.github.com/*",
+		"https://pokeapi.co/*",
+		"https://api.devin.ai/*"
 	],
 	"action": {
 		"default_icon": "assets/icon.png"

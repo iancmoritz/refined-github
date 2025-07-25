@@ -106,3 +106,79 @@ chrome.runtime.onInstalled.addListener(async () => {
 	// Call after the reset above just in case we nuked Safari's base permissions
 	await showWelcomePage();
 });
+
+chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
+	if (message.type === 'API_REQUEST_DEVIN_ISSUE_TRIAGE') {
+		console.log('Received Devin API triage request:', message);
+
+		const {fullUrl, token} = message.payload;
+
+		if (!token) {
+			sendResponse({success: false, error: 'DEVIN_API_TOKEN environment variable not configured.'});
+			return;
+		}
+
+		fetch('https://api.devin.ai/v1/sessions', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+			body: `{"prompt":"Review the issue at ${fullUrl}, and triage it by making a plan to implement it and comment on the issue with the plan. Also, provide a feasibility score from 1-10 on how likely it is that the issue can be implemented. DO NOT actually implement the issue.","idempotent":true}`,
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`Devin API responded with status ${response.status}`);
+				}
+				console.log(`Devin API response:`, response);
+				return response.json();
+			})
+			.then(data => {
+				console.log(`Devin API response:`, data);
+				sendResponse({success: true, result: data});
+			})
+			.catch(error => {
+				console.error(`Devin API error:`, error);
+				sendResponse({success: false, error: error.message});
+			});
+
+		return true; // Indicates async response
+	}
+
+	if (message.type === 'API_REQUEST_DEVIN_ISSUE_IMPLEMENT') {
+		console.log('Received Devin API implement request:', message);
+
+		const {fullUrl, token} = message.payload;
+
+		if (!token) {
+			sendResponse({success: false, error: 'DEVIN_API_TOKEN environment variable not configured.'});
+			return;
+		}
+
+		fetch('https://api.devin.ai/v1/sessions', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+			body: `{"prompt":"Implement the issue at ${fullUrl} and open a pull request. If the issue has a implementation plan attached as a comment, use that plan to implement the issue.","idempotent":true}`,
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`Devin API responded with status ${response.status}`);
+				}
+				console.log(`Devin API response:`, response);
+				return response.json();
+			})
+			.then(data => {
+				console.log(`Devin API response:`, data);
+				sendResponse({success: true, result: data});
+			})
+			.catch(error => {
+				console.error(`Devin API error:`, error);
+				sendResponse({success: false, error: error.message});
+			});
+
+		return true; // Indicates async response
+	}
+});
