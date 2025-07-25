@@ -22,7 +22,7 @@ async function makeApiRequestDevinTriage(): Promise<void> {
 			console.log(`Devin session created:`, response.result);
 			// Open the session in a new tab
 			window.open(response.result.url, '_blank');
-			alert(`Devin triage session created! Session ID: ${response.result.sessionId || 'unknown'}`);
+			alert(`Devin triage session created! Session ID: ${response.result.session_id || 'unknown'}`);
 		} else {
 			throw new Error(response.error || 'Unknown error');
 		}
@@ -46,7 +46,7 @@ async function makeApiRequestDevinImplement(): Promise<void> {
 		if (response && response.success) {
 			console.log(`Devin session created:`, response.result);
 			window.open(response.result.url, '_blank');
-			alert(`Devin implement session created! Session ID: ${response.result.sessionId || 'unknown'}`);
+			alert(`Devin implement session created! Session ID: ${response.result.session_id || 'unknown'}`);
 		} else {
 			throw new Error(response.error || 'Unknown error');
 		}
