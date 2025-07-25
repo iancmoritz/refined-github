@@ -3,35 +3,18 @@ import * as pageDetect from 'github-url-detection';
 
 import features from '../feature-manager.js';
 import observe from '../helpers/selector-observer.js';
+import {getDevinToken} from '../options-storage.js';
 
-async function makeApiRequestPokemon(action: string, _issueUrl: string): Promise<void> {
-	try {
-		const response = await chrome.runtime.sendMessage({
-			type: 'API_REQUEST_POKEMON',
-			payload: {
-				pokemon: action.toLowerCase(), // e.g., "pikachu"
-			}
-		});
-
-		if (response.success) {
-			console.log(`Pokémon data:`, response.result);
-			alert(`Fetched ${response.result.name}! Base XP: ${response.result.base_experience}`);
-		} else {
-			throw new Error(response.error || 'Unknown error');
-		}
-	} catch (error) {
-		console.error(`Error fetching Pokémon data:`, error);
-		alert(`Error fetching Pokémon info. Check console.`);
-	}
-}
 
 async function makeApiRequestDevinTriage(): Promise<void> {
 	const fullUrl = globalThis.location.href;
+	const token = await getDevinToken();
 	try {
 		const response = await chrome.runtime.sendMessage({
 			type: 'API_REQUEST_DEVIN_ISSUE_TRIAGE',
 			payload: {
 				fullUrl,
+				token,
 			},
 		});
 
@@ -51,14 +34,15 @@ async function makeApiRequestDevinTriage(): Promise<void> {
 
 async function makeApiRequestDevinImplement(): Promise<void> {
 	const fullUrl = globalThis.location.href;
+	const token = await getDevinToken();
 	try {
 		const response = await chrome.runtime.sendMessage({
 			type: 'API_REQUEST_DEVIN_ISSUE_IMPLEMENT',
 			payload: {
 				fullUrl,
+				token,
 			},
 		});
-
 		if (response && response.success) {
 			console.log(`Devin session created:`, response.result);
 			window.open(response.result.url, '_blank');
