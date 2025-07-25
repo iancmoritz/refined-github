@@ -4,10 +4,10 @@ import * as pageDetect from 'github-url-detection';
 import features from '../feature-manager.js';
 import observe from '../helpers/selector-observer.js';
 
-async function makeApiRequest(action: string, _issueUrl: string): Promise<void> {
+async function makeApiRequestPokemon(action: string, _issueUrl: string): Promise<void> {
 	try {
 		const response = await chrome.runtime.sendMessage({
-			type: 'API_REQUEST',
+			type: 'API_REQUEST_POKEMON',
 			payload: {
 				pokemon: action.toLowerCase(), // e.g., "pikachu"
 			}
@@ -22,6 +22,28 @@ async function makeApiRequest(action: string, _issueUrl: string): Promise<void> 
 	} catch (error) {
 		console.error(`Error fetching Pokémon data:`, error);
 		alert(`Error fetching Pokémon info. Check console.`);
+	}
+}
+
+async function makeApiRequestDevinTriage(repository: string, issue: number): Promise<void> {
+	try {
+		const response = await chrome.runtime.sendMessage({
+			type: 'API_REQUEST_DEVIN_ISSUE_TRIAGE',
+			payload: {
+				repository,
+				issue,
+			},
+		});
+
+		if (response.success) {
+			console.log(`Devin session created:`, response.result);
+			alert(`Devin triage session created! Session ID: ${response.result.sessionId || 'unknown'}`);
+		} else {
+			throw new Error(response.error || 'Unknown error');
+		}
+	} catch (error) {
+		console.error(`Error creating Devin session:`, error);
+		alert(`Error creating Devin session. Check console.`);
 	}
 }
 
@@ -47,7 +69,7 @@ async function addSidebarButton(reviewersSection: Element): Promise<void> {
 						border: '1px solid #0969da',
 						gap: '6px',
 					}}
-					onClick={() => makeApiRequest('pikachu', currentUrl)}
+					onClick={() => makeApiRequestDevinTriage('pikachu', 1)}
 				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M12 2L8 6h8l-4-4zM6 8v8l4-4-4-4zm12 0l-4 4 4 4V8zM8 18h8l-4 4-4-4z" />
@@ -67,7 +89,7 @@ async function addSidebarButton(reviewersSection: Element): Promise<void> {
 						border: '1px solid #0969da',
 						gap: '6px',
 					}}
-					onClick={() => makeApiRequest('charizard', currentUrl)}
+					onClick={() => makeApiRequestPokemon('charizard', currentUrl)}
 				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M12 2L8 6h8l-4-4zM6 8v8l4-4-4-4zm12 0l-4 4 4 4V8zM8 18h8l-4 4-4-4z" />
