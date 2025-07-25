@@ -132,7 +132,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 			return;
 		}
 
-		fetch('https://api.devin.ai/sessions', {
+		fetch('https://api.devin.ai/v1/sessions', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
