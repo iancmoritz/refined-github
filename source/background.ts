@@ -106,3 +106,16 @@ chrome.runtime.onInstalled.addListener(async () => {
 	// Call after the reset above just in case we nuked Safari's base permissions
 	await showWelcomePage();
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	if (message.type === 'API_REQUEST') {
+		console.log('Received message:', message);
+		// Handle the API request
+		const pokemonName = message.payload.pokemon;
+		fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
+			.then(response => response.json())
+			.then(data => sendResponse({success: true, result: data}))
+			.catch(error => sendResponse({success: false, error: error.message}));
+		return true; // Indicate that we will send a response asynchronously
+	}
+});
