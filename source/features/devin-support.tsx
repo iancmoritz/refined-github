@@ -6,50 +6,27 @@ import observe from '../helpers/selector-observer.js';
 
 async function makeApiRequest(action: string, issueUrl: string): Promise<void> {
 	try {
-		// Extract issue/PR information from the URL
 		const urlParts = issueUrl.split('/');
-		const owner = urlParts[3];
-		const repo = urlParts[4];
-		const issueNumber = urlParts[6];
-		const issueType = urlParts[5]; // 'issues' or 'pull'
-
-		// Simple API request payload
 		const payload = {
 			action,
-			owner,
-			repo,
-			issueNumber,
-			issueType,
+			owner: urlParts[3],
+			repo: urlParts[4],
+			issueNumber: urlParts[6],
+			issueType: urlParts[5],
 			timestamp: new Date().toISOString(),
 		};
 
-		// Make API request (replace with actual Devin API endpoint)
-		const response = await fetch('https://api.devin.example.com/github-action', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				// Add authentication headers as needed
-				// 'Authorization': 'Bearer YOUR_API_KEY',
-			},
-			body: JSON.stringify(payload),
-		});
+		const response = await chrome.runtime.sendMessage({type: 'API_REQUEST', payload});
 
-		if (response.ok) {
-			const result = await response.json();
-			console.log(`${action} request successful:`, result);
-			// Show success message
+		if (response.success) {
+			console.log(`${action} request successful:`, response.result);
 			alert(`${action} request sent successfully!`);
 		} else {
-			throw new Error(`API request failed: ${response.status}`);
+			throw new Error(response.error || 'Unknown error');
 		}
 	} catch (error) {
 		console.error(`${action} API request failed:`, error);
-		// For now, show the payload in console for debugging
-		console.log('Would send payload:', {
-			action,
-			issueUrl,
-			timestamp: new Date().toISOString(),
-		});
+		console.log('Would send payload:', {action, issueUrl, timestamp: new Date().toISOString()});
 		alert(`${action} request initiated (check console for details)`);
 	}
 }
