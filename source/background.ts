@@ -161,7 +161,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`,
 			},
-			body: `{"prompt":"Implement the issue at ${fullUrl} and open a pull request","idempotent":true}`,
+			body: `{"prompt":"Implement the issue at ${fullUrl} and open a pull request. If the issue has a implementation plan attached as a comment, use that plan to implement the issue.","idempotent":true}`,
 		})
 			.then(response => {
 				if (!response.ok) {
