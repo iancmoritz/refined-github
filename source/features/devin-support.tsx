@@ -5,31 +5,59 @@ import features from '../feature-manager.js';
 import observe from '../helpers/selector-observer.js';
 
 async function addSidebarButton(reviewersSection: Element): Promise<void> {
-	// Create a container for the button
-	const buttonContainer = (
+	// Create a container with both buttons horizontally inline
+	const buttonsContainer = (
 		<div className="discussion-sidebar-item">
-			<button
-				type="button"
-				className="btn btn-block mt-2"
-				style={{
-					width: '100%',
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}
-			>
-				<span className="mr-2">New Button</span>
-			</button>
+			<div style={{display: 'flex', gap: '8px', marginTop: '8px'}}>
+				<button
+					type="button"
+					className="btn btn-sm"
+					style={{
+						flex: '1',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						backgroundColor: '#0969da',
+						color: 'white',
+						border: '1px solid #0969da',
+						gap: '6px',
+					}}
+				>
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M12 2L8 6h8l-4-4zM6 8v8l4-4-4-4zm12 0l-4 4 4 4V8zM8 18h8l-4 4-4-4z" />
+					</svg>
+					<span>Scope with Devin</span>
+				</button>
+				<button
+					type="button"
+					className="btn btn-sm"
+					style={{
+						flex: '1',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						backgroundColor: '#0969da',
+						color: 'white',
+						border: '1px solid #0969da',
+						gap: '6px',
+					}}
+				>
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M12 2L8 6h8l-4-4zM6 8v8l4-4-4-4zm12 0l-4 4 4 4V8zM8 18h8l-4 4-4-4z" />
+					</svg>
+					<span>Complete with Devin</span>
+				</button>
+			</div>
 		</div>
 	);
 
-	// Add the button after the Reviewers section
-	reviewersSection.after(buttonContainer);
+	// Add the buttons container after the Reviewers section
+	reviewersSection.after(buttonsContainer);
 }
 
 function init(signal: AbortSignal): void {
-	// Look for the Reviewers section and add the button below it
-	observe('[aria-label="Select reviewers"]', addSidebarButton, {signal});
+	// Look for the Open Tag section and add the button below it
+	observe('[class^="HeaderMetadata-module__metadataContent"]', addSidebarButton, {signal});
 }
 
 void features.add(import.meta.url, {
