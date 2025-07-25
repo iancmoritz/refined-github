@@ -69,7 +69,7 @@ async function addSidebarButton(reviewersSection: Element): Promise<void> {
 						border: '1px solid #0969da',
 						gap: '6px',
 					}}
-					onClick={() => makeApiRequestDevinTriage('pikachu', 1)}
+					onClick={() => makeApiRequestDevinTriage('github.com/iancmoritz/refined-github', 1)}
 				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M12 2L8 6h8l-4-4zM6 8v8l4-4-4-4zm12 0l-4 4 4 4V8zM8 18h8l-4 4-4-4z" />

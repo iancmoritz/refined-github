@@ -138,13 +138,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`,
 			},
-			body: JSON.stringify({
-				mode: 'triage',
-				github: {
-					repo: repository,   // e.g., "user/repo"
-					issue: issue,        // e.g., issue number or URL
-				},
-			}),
+			body: `{"prompt":"Review the pull request at ${repository}/issue/${issue}","idempotent":true}`,
 		})
 			.then(response => {
 				if (!response.ok) {
